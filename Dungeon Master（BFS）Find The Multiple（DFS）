@@ -1,0 +1,151 @@
+/*
+ 在2100年科学家发现了平行宇宙，但是新发现的Earth2的世界中所有数字都是由0和1组成的十进制数，如果从我们的世界穿越到Earth2，数字将发生一些变化，例如：一个正整数n，将被转化为n的一个非零的倍数m，这个m应当符合Earth2的数字规则。你可以假定n不大于200且m不多于100位。
+提示：本题采用Special Judge，你无需输出所有符合条件的m，你只需要输出任一符合条件的m即可。
+
+Input
+输入包含多组数据，每组数据仅一行，只包含一个正整数n，n==0时输入结束 (1 <= n <= 200).
+
+Output
+对于输入的每组n，都输出任一符合条件的m。即使有多个符合条件的m，你也只需要输出一个即可。
+（已知long long范围内存在表示数据中所有的m
+*/
+
+/*
+ 思路：三维BFS，八个方向。
+*/
+```
+#include<iostream>
+#include<queue>
+#include<cstring>
+using namespace std;
+struct node {
+    int x,y,z,step;
+} st,ed;
+char M[35][35][35];
+int book[35][35][35],L,R,C;
+int dir[6][3]= {{0,0,1},{0,0,-1},{0,1,0},{0,-1,0},{1,0,0},{-1,0,0}};
+bool check(int x,int y,int z) {
+    if(x<0||y<0||z<0||x>=L||y>=R||z>=C) {
+        return false;
+    } else if(M[x][y][z]=='#') {
+        return false;
+    } else if(book[x][y][z]) {
+        return false;
+    } else
+        return true;
+}
+int BFS() {
+    queue<node>Q;
+    Q.push(st);
+    while(!Q.empty()) {
+        node first,next;
+        first=Q.front();
+        Q.pop();
+        if(first.x==ed.x&&first.y==ed.y&&first.z==ed.z) {
+            return first.step;
+        }
+        for(int i=0; i<6; i++) {
+            next.x=first.x+dir[i][0];
+            next.y=first.y+dir[i][1];
+            next.z=first.z+dir[i][2];
+            if(!check(next.x,next.y,next.z)) {
+                continue;
+            }
+            book[next.x][next.y][next.z]=1;
+            next.step=first.step+1;
+            Q.push(next);
+        }
+    }
+    return 0;
+}
+int main() {
+    while(cin>>L>>R>>C) {
+        if(L+R+C==0)
+            break;
+        for(int i=0; i<L; i++) {
+            for(int j=0; j<R; j++) {
+                for(int k=0; k<C; k++) {
+                    cin>>M[i][j][k];
+                    if(M[i][j][k]=='S') {
+                        st.x=i;
+                        st.y=j;
+                        st.z=k;
+                        st.step=0;
+                        book[i][j][k]=1;
+                    }
+                    if(M[i][j][k]=='E') {
+                        ed.x=i;
+                        ed.y=j;
+                        ed.z=k;
+                    }
+                }
+            }
+        }
+        memset(book,0,sizeof(book));
+        int res=BFS();
+        if(res)
+            cout<<"Escaped in "<<res<<" minute(s)."<<endl;
+        else
+            cout<<"Trapped!"<<endl;
+    }
+}
+```
+
+/*
+ 在2100年科学家发现了平行宇宙，但是新发现的Earth2的世界中所有数字都是由0和1组成的十进制数，如果从我们的世界穿越到Earth2，数字将发生一些变化，例如：一个正整数n，将被转化为n的一个非零的倍数m，这个m应当符合Earth2的数字规则。你可以假定n不大于200且m不多于100位。
+提示：本题采用Special Judge，你无需输出所有符合条件的m，你只需要输出任一符合条件的m即可。
+
+Input
+输入包含多组数据，每组数据仅一行，只包含一个正整数n，n==0时输入结束 (1 <= n <= 200).
+
+Output
+对于输入的每组n，都输出任一符合条件的m。即使有多个符合条件的m，你也只需要输出一个即可。
+（已知long long范围内存在表示数据中所有的m
+*/
+/*
+思路：DFS，不过要从大往小搜，从小往大搜会超时。
+*/
+
+```
+#include<iostream>
+#include<cstdio>
+using namespace std;
+#define ll long long int
+ll n,res,flag;
+int s[19];
+void DFS(ll x,ll t) {
+    if(x%n==0&&x) {
+        res=x;
+        flag=1;
+        return;
+    }
+    if(flag) {
+        return;
+    }
+    if(t>=19) {
+        return;
+    }
+    s[t]=1;
+    ll T=0;
+    for(int i=0; i<=18; i++) {
+        T=T*10+s[i];
+    }
+    DFS(T,t+1);
+    s[t]=0;
+    T=0;
+    for(int i=0; i<=18; i++) {
+        T=T*10+s[i];
+    }
+    DFS(T,t+1);
+}
+int main() {
+    while(cin>>n) {
+        if(n==0)
+            break;
+        flag=0;
+        res=0;
+        DFS(0,0);
+        cout<<res<<endl;
+    }
+}
+```
