@@ -1,0 +1,42 @@
+这道题直接用set存已经拼接过的字符串，如果遇到和以前一样的，就退出循环。
+
+#include<iostream>
+#include<set>
+using namespace std;
+int main() {
+    int t;
+    cin>>t;
+    for(int i=1; i<=t; i++) {
+        string s1,s2,s,t="";
+        int len,cnt=1,flag=0;
+        set<string>S;
+        cin>>len>>s1>>s2>>s;
+        for(int j=0; j<len; j++) {
+            t+=s2[j];
+            t+=s1[j];
+        }
+        S.insert(t);
+        while(t!=s) {
+            for(int j=0; j<len; j++) {
+                s1[j]=t[j];
+            }
+            for(int j=len; j<2*len; j++) {
+                s2[j-len]=t[j];
+            }
+            t="";
+            for(int j=0; j<len; j++) {
+                t+=s2[j];
+                t+=s1[j];
+            }
+            cnt++;
+            if(S.find(t)!=S.end()) {
+                flag=1;
+                break;
+            }
+        }
+        if(!flag)
+            cout<<i<<" "<<cnt<<endl;
+        else
+            cout<<i<<" "<<"-1"<<endl;
+    }
+}
