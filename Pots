@@ -1,0 +1,120 @@
+用BFS，用栈存储路径，最后输出。
+#include<iostream>
+#include<queue>
+#include<stack>
+using namespace std;
+const int maxn=1e2+5;
+int A,B,C,book[maxn][maxn],cnt=0;
+struct ZT {
+    int a,b;
+    int flag;
+    int K;
+    int pre;
+    int xz;
+} S[10005];
+string answer[6] = {{"FILL(1)"},{"FILL(2)"},{"DROP(1)"},{"DROP(2)"},{"POUR(1,2)"},{"POUR(2,1)"}};
+int BFS() {
+    S[cnt].a=S[cnt].b=0;
+    S[cnt].pre=-1;
+    S[cnt].xz=cnt;
+    S[cnt++].K=0;
+    queue<ZT>Q;
+    Q.push(S[cnt]);
+    while(!Q.empty()) {
+        ZT first,next;
+        first=Q.front();
+        Q.pop();
+        int t1,t2;
+        t1=first.a;
+        t2=first.b;
+        if(t1==C||t2==C) {
+            return first.xz;
+            break;
+        }
+        book[t1][t2]=1;
+        if(!book[A][t2]) {
+            next.a=A;
+            next.b=t2;
+            next.flag=0;
+            next.K=first.K+1;
+            S[cnt]=next;
+            S[cnt].xz=cnt;
+            S[cnt].pre=first.xz;
+            Q.push(S[cnt++]);
+        }
+        if(!book[t1][B]) {
+            next.a=t1;
+            next.b=B;
+            next.flag=1;
+            next.K=first.K+1;
+            S[cnt]=next;
+            S[cnt].xz=cnt;
+            S[cnt].pre=first.xz;
+            Q.push(S[cnt++]);
+        }
+        if(!book[0][t2]) {
+            next.a=0;
+            next.b=t2;
+            next.flag=2;
+            next.K=first.K+1;
+            S[cnt]=next;
+            S[cnt].xz=cnt;
+            S[cnt].pre=first.xz;
+            Q.push(S[cnt++]);
+        }
+        if(!book[t1][0]) {
+            next.a=t1;
+            next.b=0;
+            next.flag=3;
+            next.K=first.K+1;
+            S[cnt]=next;
+            S[cnt].xz=cnt;
+            S[cnt].pre=first.xz;
+            Q.push(S[cnt++]);
+        }
+        int m,n;
+        n=(t2+t1>B)?B:t2+t1;
+        m=(t1<B-t2)?0:t1-B+t2;
+        if(!book[m][n]) {
+            next.a=m;
+            next.b=n;
+            next.flag=4;
+            next.K=first.K+1;
+            S[cnt]=next;
+            S[cnt].xz=cnt;
+            S[cnt].pre=first.xz;
+            Q.push(S[cnt++]);
+        }
+        m=(t1+t2>A)?A:t1+t2;
+        n=(t2<A-t1)?0:t2+t1-A;
+        if(!book[m][n]) {
+            next.a=m;
+            next.b=n;
+            next.flag=5;
+            next.K=first.K+1;
+            S[cnt]=next;
+            S[cnt].xz=cnt;
+            S[cnt].pre=first.xz;
+            Q.push(S[cnt++]);
+        }
+    }
+    return -1;
+}
+int main() {
+    cin>>A>>B>>C;
+    int a=BFS();
+    if(a==-1) {
+        cout<<"impossible"<<endl;
+        return 0;
+    }
+    stack<string>ss;
+    cout<<S[a].K<<endl;
+    while(S[a].pre!=-1) {
+        ss.push(answer[S[a].flag]);
+        a=S[a].pre;
+    }
+    while(!ss.empty()) {
+        cout<<ss.top()<<endl;
+        ss.pop();
+    }
+}
