@@ -1,0 +1,77 @@
+双向BFS，把距离加起来再比较。
+
+#include<iostream>
+#include<queue>
+#include<cstring>
+using namespace std;
+char W[205][205];
+int m,n,V[205][205];
+int dir[4][2]= {{1,0},{0,1},{-1,0},{0,-1}};
+struct zb {
+    int a,b;
+    int step;
+} yy,mm;
+queue<zb>qq;
+int check(zb S) {
+    if(S.a>0&&S.a<=n&&S.b>0&&S.b<=m&&V[S.a][S.b]==-1&&W[S.a][S.b]!='#') {
+        return 1;
+    } else
+        return 0;
+}
+void BFS(zb S) {
+    queue<zb>Q;
+    S.step=0;
+    Q.push(S);
+    while(!Q.empty()) {
+        zb first,next;
+        first=Q.front();
+        Q.pop();
+        V[first.a][first.b]=first.step;
+        if(V[mm.a][mm.b]!=-1&&V[yy.a][yy.b]!=-1) {
+            return ;
+        }
+        for(int i=0; i<4; i++) {
+            next.a=first.a+dir[i][0];
+            next.b=first.b+dir[i][1];
+            if(check(next)) {
+                next.step=first.step+1;
+                Q.push(next);
+            }
+        }
+    }
+}
+int main() {
+    while(cin>>n>>m) {
+        memset(V,-1,sizeof(V));
+        for(int i=1; i<=n; i++) {
+            for(int j=1; j<=m; j++) {
+                cin>>W[i][j];
+                if(W[i][j]=='M') {
+                    mm.a=i;
+                    mm.b=j;
+                }
+                if(W[i][j]=='Y') {
+                    yy.a=i;
+                    yy.b=j;
+                }
+                if(W[i][j]=='@') {
+                    zb t;
+                    t.a=i;
+                    t.b=j;
+                    qq.push(t);
+                }
+            }
+        }
+        int res=1e9;
+        while(!qq.empty()) {
+            memset(V,-1,sizeof(V));
+            zb t;
+            t=qq.front();
+            qq.pop();
+            BFS(t);
+            res=min(res,V[mm.a][mm.b]+V[yy.a][yy.b]);
+            //cout<<V[mm.a][mm.b]<<" "<<V[yy.a][yy.b]<<endl;
+        }
+        cout<<res*11<<endl;
+    }
+}
